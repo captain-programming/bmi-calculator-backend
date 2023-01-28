@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const UserModel = require("../models/user.model");
 
 
@@ -34,7 +35,7 @@ const userLogin = async(req, res) =>{
       return res.status(400).send({message: "Invalid Credentials"})
     }
 
-    return res.status(200).send({message: "Login Successful"});
+    return res.status(200).send({userId: findUser._id});
 
   }catch(err){
     return res.status(500).send(err.message);
@@ -44,25 +45,20 @@ const userLogin = async(req, res) =>{
 
 
 const userProfileDetails = async(req, res) =>{
-  const {id: _id} = req;
+  const {id: _id} = req.params;
+
+  if(!mongoose.Types.ObjectId.isValid(_id)){
+    return res.status(404).send('users unavailable...');
+  }
+
   try{
-    const findUser= await UserModel.findOne({email});
+    const findUser= await UserModel.findById(_id);
 
-    if(!findUser){
-      return res.status(404).send({message: "User does not exist"});
-    }
-
-    const checkPassword= await (password, findUser.password);
-
-    if(!checkPassword){
-      return res.status(400).send({message: "Invalid Credentials"})
-    }
-
-    return res.status(200).send({message: "Login Successful"});
+    return res.status(200).send(findUser);
 
   }catch(err){
     return res.status(500).send(err.message);
   }
 }
 
-module.exports = {userLogin, userRegister}
+module.exports = {userLogin, userRegister, userProfileDetails}

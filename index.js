@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dbConnect = require("./config/dbConnect");
 const userRoutes = require("./routes/user.routes");
+const bmiRoutes = require("./routes/bmi.routes");
 
 const app = express();
 const PORT = process.env.PORT || 8080
@@ -15,6 +16,7 @@ app.get("/", (req, res)=>{
 });
 
 app.use("/users", userRoutes);
+app.use("/bmi", bmiRoutes);
 
 app.listen(PORT, async() => {
   await dbConnect();
